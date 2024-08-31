@@ -6,8 +6,6 @@
 // 6. Give the user their winnings
 // 7. play again
 
-const prompt = require("prompt-sync")();
-
 const ROWS = 3;
 const COLS = 3;
 
@@ -31,7 +29,7 @@ const deposit = () => {
     const numberDepositAmount = parseFloat(depositAmount);
 
     if (isNaN(numberDepositAmount) || numberDepositAmount <= 0) {
-      console.log("Invalid deposit amount, try again.");
+      alert("Invalid deposit amount, try again.");
     } else {
       return numberDepositAmount;
     }
@@ -44,7 +42,7 @@ const getNumberOfLines = () => {
     const numberOfLines = parseFloat(lines);
 
     if (isNaN(numberOfLines) || numberOfLines <= 0 || numberOfLines > 3) {
-      console.log("Invalid number of lines, try again.");
+      alert("Invalid number of lines, try again.");
     } else {
       return numberOfLines;
     }
@@ -57,7 +55,7 @@ const getBet = (balance, lines) => {
     const numberBet = parseFloat(bet);
 
     if (isNaN(numberBet) || numberBet <= 0 || numberBet > balance / lines) {
-      console.log("Invalid bet, try again.");
+      alert("Invalid bet, try again.");
     } else {
       return numberBet;
     }
@@ -100,6 +98,8 @@ const transpose = (reels) => {
 };
 
 const printRows = (rows) => {
+  const outputElement = document.getElementById("output");
+  outputElement.innerHTML = "";
   for (const row of rows) {
     let rowString = "";
     for (const [i, symbol] of row.entries()) {
@@ -108,7 +108,7 @@ const printRows = (rows) => {
         rowString += " | ";
       }
     }
-    console.log(rowString);
+    outputElement.innerHTML += rowString + "\n";
   }
 };
 
@@ -137,25 +137,28 @@ const game = () => {
   let balance = deposit();
 
   while (true) {
-    console.log("You have a balance of $" + balance);
+    alert("You have a balance of $" + balance);
     const numberOfLines = getNumberOfLines();
     const bet = getBet(balance, numberOfLines);
+
     balance -= bet * numberOfLines;
+
     const reels = spin();
     const rows = transpose(reels);
     printRows(rows);
+
     const winnings = getWinnings(rows, bet, numberOfLines);
     balance += winnings;
-    console.log("you won, $" + winnings.toString());
+    alert("You won, $" + winnings);
 
     if (balance <= 0) {
-      console.log("You ran out of money!");
+      alert("You ran out of money!");
       break;
     }
 
     const playAgain = prompt("Do you want to play again (y/n)? ");
-    if (playAgain != "y") break;
+    if (playAgain.toLowerCase() != "y") break;
   }
 };
 
-game();
+document.getElementById("start-game").addEventListener("click", game);
